@@ -4,7 +4,14 @@ import '../models/joke_model.dart';
 
 class JokeTypeScreen extends StatefulWidget {
   final String type;
-  JokeTypeScreen({required this.type});
+  final List<Joke> favorites;
+  final Function(Joke joke, bool isAdding) onFavoriteToggle;
+
+  JokeTypeScreen({
+    required this.type,
+    required this.favorites,
+    required this.onFavoriteToggle,
+  });
 
   @override
   _JokeTypeScreenState createState() => _JokeTypeScreenState();
@@ -38,9 +45,27 @@ class _JokeTypeScreenState extends State<JokeTypeScreen> {
           return ListView.builder(
             itemCount: jokes.length,
             itemBuilder: (context, index) {
+              final joke = jokes[index];
+              final isFavorite = widget.favorites.contains(joke);
+
               return ListTile(
-                title: Text(jokes[index].setup),
-                subtitle: Text(jokes[index].punchline),
+                title: Text(joke.setup),
+                subtitle: Text(joke.punchline),
+                trailing: IconButton(
+                  icon: Icon(
+                    isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: isFavorite ? Colors.red : null,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      if (isFavorite) {
+                        widget.onFavoriteToggle(joke, false);
+                      } else {
+                        widget.onFavoriteToggle(joke, true);
+                      }
+                    });
+                  },
+                ),
               );
             },
           );
